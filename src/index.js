@@ -24,8 +24,7 @@ const App = () => {
   }
 };
 
-const PlanetInfo = ({ id }) => {
-
+const usePlanetInfo = (id) => {
   const [name, setName] = useState();
 
   console.log('init state', name);
@@ -37,6 +36,12 @@ const PlanetInfo = ({ id }) => {
       .then(data => !cancelled && setName(data.name));
     return () => cancelled = true;
   }, [id]);
+
+  return name;
+};
+
+const PlanetInfo = ({ id }) => {
+  const name = usePlanetInfo(id);
 
   return (
     <div>ID: {id} - Planet name: {name}</div>
