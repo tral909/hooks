@@ -1,34 +1,46 @@
-import React, { useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
-const MyContext = React.createContext();
-
 const App = () => {
-  return (
-    <MyContext.Provider value="Hello World 123">
-      <Child />
-    </MyContext.Provider>
-  );
+  const [value, setValue] = useState(1);
+  const [visible, setVisible] = useState(true);
+
+  if (visible) {
+    return (
+      <div>
+        <button
+          onClick={() => setValue(v => v + 1)}>
+          +
+        </button>
+        <button
+          onClick={() => setVisible(false)}>
+          hide
+        </button>
+        <PlanetInfo id={value} />
+      </div>
+    );
+  } else {
+    return <button onClick={() => setVisible(true)}>show</button>
+  }
 };
 
-const Child = () => {
-  const value = useContext(MyContext);
+const PlanetInfo = ({ id }) => {
 
-  // Вместо этого теперь можно использовать
-  // return (
-  //   <MyContext.Consumer>
-  //     {
-  //       (value) => {
-  //         return (
-  //           <p>{value}</p>
-  //         );
-  //       }
-  //     }
-  //   </MyContext.Consumer>
-  // );
+  const [name, setName] = useState();
 
-  // ЭТО
-  return <p>{value}</p>
+  console.log('init state', name);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`https://swapi.dev/api/planets/${id}/`)
+      .then(res => res.json())
+      .then(data => !cancelled && setName(data.name));
+    return () => cancelled = true;
+  }, [id]);
+
+  return (
+    <div>ID: {id} - Planet name: {name}</div>
+  );
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
